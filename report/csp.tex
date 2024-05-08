@@ -3,14 +3,11 @@
 % Packages
 \usepackage[margin=1in]{geometry}
 \usepackage{graphicx}
-\usepackage{biblatex}
 \usepackage{hyperref}
 \usepackage[utf8]{inputenc}
 \usepackage[english,serbian]{babel}
 \usepackage{graphicx}
-
-% Bibliography
-\addbibresource{references.bib}
+\usepackage[labelformat=empty]{caption}
 
 % Title and author information
 \title{Optimizacija problema sečenja}
@@ -28,9 +25,23 @@ Ovaj rad se bavi optimizacijom problema sečenja uz pomoć simuliranog kaljenja 
 \section{Problem sečenja}
 Problem sečenja (Cutting stock problem - CSP) je NP težak problem u kojem je cilj naći najbolji način da se materijal određenih dimenzija iseče na manje komade zadatih dimenzija, tako da se minimizuje otpad i poveća iskorišćenost materijala. Ovaj problem se često javlja u industriji papira, čelika, drveta, tekstila i sl. Rešavanje ovog problema je složeno zbog velikog broja mogućih kombinacija isecanja narudžbina.
 
-U ovom radu, za dužinu jednog komada materijala je korišćena fiksna vrednost od 100 cm, a rešenje problema je predstavljeno kombinacijom zadatih celih brojeva između 1 i 100. Vrednost jednog rešenja se računa tako što se lista otpadaka jedne narudžbine sortira u rastućem poretku, pa se zatim dužina svakog otpadka pomnoži sa svojom pozicijom u sortiranoj listi. Zbir dobijenih vrednosti predstavlja vrednost datog rešenja. \\
+U ovom radu, za dužinu jednog komada materijala je korišćena fiksna vrednost od 100 cm, a rešenje problema je predstavljeno kombinacijom zadatih celih brojeva između 1 i 100. Vrednost jednog rešenja se računa tako što se lista otpadaka jedne narudžbine sortira u opadajućem poretku pa se zatim dužina svakog otpatka pomnoži sa svojom pozicijom u sortiranoj listi. Zbir dobijenih vrednosti predstavlja vrednost datog rešenja. \\
 
-TODO slika
+\begin{minipage}{\linewidth}
+    \centering
+    \includegraphics[width=0.5\linewidth]{img/predstavak_resenja.png}
+\end{minipage}
+
+%\clearpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.45\linewidth]{img/vrednost_resenja_1.png}\hfill
+    \includegraphics[width=0.45\linewidth]{img/vrednost_resenja_2.png}
+    \caption{Računanje vrednosti rešenja}
+\end{figure}
+
+\vspace{0.5cm}
 
 \section{Simulirano kaljenje}
 Simulirano kaljenje je metaheuristički algoritam za rešavanje optimizacionih problema, inspirisan procesom kaljenja metala u metalurgiji. Cilj algoritma je pronaći globalni optimum funkcije, izbegavajući zaglavljivanje u lokalnim optimumima.
@@ -98,10 +109,10 @@ Za implementaciju genetskog algoritma korišćeni su sledeći parametri:
 \begin{enumerate}
 	\item Veličina populacije
 	\item Elitizam
-	\item Mutacija i ukrštanje TODO
+	\item Mutacija i ukrštanje
 		\begin{itemize}
-			\item DHM/ILC pristup 
-			\item ILM/DHC pristup
+			\item DHM/ILC (Decreasing High Mutation Rate (DHM) and an Increasing Low Crossover Rate (ILC))
+			\item ILM/DHC (Increasing Low Mutation Rate (ILM) and a Decreasing High Crossover Rate (DHC))
 			\item Fiksna verovatnoća mutacije i ukrštanja
 		\end{itemize}
 	\item Broj iteracija
@@ -116,12 +127,44 @@ Testirane su tri funkcije selekcije:
 	\item Rangovska selekcija \\
 \end{enumerate}
 
-Tri funkcije ukrštanja: TODO
+Testirane su tri funkcije ukrštanja, ali zbog toga što nisu direktno primenjive na originalno rešenje, bilo je potrebno prvo modifikovati ih.
+
+\vspace{0.5cm}
+\begin{center}
+  \includegraphics[width=0.8\linewidth]{img/modifikacija_resenja.png}
+\end{center}
+\vspace{0.5cm}
+
+
+Tri funkcije ukrštanja:
 \begin{enumerate}
 	\item \textit{Partially mapped crossover}
+
+	\vspace{0.5cm}
+	\begin{center}
+	  \includegraphics[width=0.8\linewidth]{img/partially_mapped_crossover.png}
+	\end{center}
+	\vspace{0.5cm}
+
 	\item \textit{Generalized order crossover}
-	\item \textit{Precedence preservative crossover} \\
+
+	\vspace{0.5cm}
+	\begin{center}
+	  \includegraphics[width=0.8\linewidth]{img/generalized_order_crossover.png}
+	\end{center}
+	\vspace{0.5cm}
+
+	\item \textit{Precedence preservative crossover}
+
+	\vspace{0.5cm}
+	\begin{center}
+	  \includegraphics[width=0.8\linewidth]{img/precedence_preservative_crossover.png}
+	\end{center}
+	\vspace{0.5cm}
+
 \end{enumerate}
+
+
 
  Četiri funkcije mutacije:
 \begin{enumerate}
@@ -132,15 +175,17 @@ Tri funkcije ukrštanja: TODO
 \end{enumerate}
 
 \subsection{Testiranje i odabir parametara i funkcija}
+Zbog dugačkog vremena izvršavanja, odabrana je fiksna veličina populacije od 100 jedinki. 
+
 Prvo je pokrenut \textit{random search} nad svim test primerima, sa 150 kombinacija parametara koji se tiču elitizma, ukrštanja, i mutacije. Pristup sa fiksnom verovatnoćom mutacije i ukrštanja se pokazao bolje od druga dva pristupa, dok za elitizam nije mogao da se izvede definitivan zaključak.
 
 Za verovatnoću mutacije su testirane vrednosti od 0.03 do 0.08. Za svaku verovatnoću su pokrenuti svi test primeri po 3 puta. Najbolji rezultati su ostvareni sa verovatnoćom 0.07.
 
 Za verovatnoću ukrštanja su testirane vrednosti od 0.6 do 1, i za svaku verovatnoću su takođe pokrenuti svi test primeri po 3 puta. Vrednost 0.85 je ostvarila najbolje rezultate.
 
-Radi biranja najboljih funkcija selekcije, ukrštanja i mutacije pokrenut je \textit{grid search}, gde je ispitana svaka kombinacija ovih funkcija nad svim test primerima. Sa rezultatima su se istakle kombinacije sa turnirskom selekcijom i \textit{swap} funkcijom mutacije, dok za funkciju ukrštanja nije moglo da se dođe do definitivnog zaključka: \textit{precedence preservative crossover} je ima najbrže vreme izvršavanja, ali najgore rezultate, dok između ostale dve funkcije nije mogla da se primeti značajna razlika u rezultatima. Zato je sa obe funkcije algoritam pokrenut nad svim test primerima po 3 puta. Ovog puta je \textit{generalized order crossover} ostvario najbolje rezultate. 
+Radi biranja najboljih funkcija selekcije, ukrštanja i mutacije pokrenut je \textit{grid search}, gde je ispitana svaka kombinacija ovih funkcija nad svim test primerima. Sa rezultatima su se istakle kombinacije sa turnirskom selekcijom i \textit{swap} funkcijom mutacije, dok za funkciju ukrštanja nije moglo da se dođe do definitivnog zaključka: \textit{precedence preservative crossover} je imao najbrže vreme izvršavanja, ali najgore rezultate, dok između ostale dve funkcije nije mogla da se primeti značajna razlika u rezultatima. Zato je za obe funkcije algoritam pokrenut nad svim test primerima po 3 puta. Ovog puta je \textit{generalized order crossover} ostvario najbolje rezultate. 
 
-Zbog dugačkog vremena izvršavanja je odabrana fiksna veličina populacije od 100 jedinki. Za elitizam su testirane veličine od 0 do 10\% od ukupnog broja populacije, gde je veličina od 4\% ostvarila najbolje rezultate. Takođe su testirane različite veličine turnira za selekciju. Odabrana je veličina od 6 jedinki po turniru.
+Za elitizam su testirane veličine od 0 do 10\% od ukupnog broja populacije, gde je veličina od 4\% ostvarila najbolje rezultate. Takođe su testirane različite veličine turnira za selekciju. Odabrana je veličina od 6 jedinki po turniru.
 
 Radi odabira broja iteracija genetski algoritam je pokrenut nad svim test primerima, i izračunata je prosečna vrednost najboljeg rešenja populacije, po svakoj iteraciji. Konačno odabran broj iteracija je 600.
 
@@ -152,7 +197,7 @@ Radi odabira broja iteracija genetski algoritam je pokrenut nad svim test primer
 \end{center}
 \vspace{0.5cm}
 
-\section{Kombinacija genetkog algoritma i simuliranog kaljenja}
+\section{Kombinacija genetskog algoritma i simuliranog kaljenja}
 
 Testirane su tri varijante kombinacije genetskog algoritma i simuliranog kaljenja. U prvoj varijanti se simulirano kaljenje pokreće nad svakom jedinkom populacije u svakoj iteraciji tokom genetskog algoritma. 
 
@@ -164,7 +209,7 @@ Testirane su tri varijante kombinacije genetskog algoritma i simuliranog kaljenj
 \end{center}
 \vspace{0.5cm}
 
-U drugoj varijanti se simulirano kaljenje pokreće samo nad najboljom jedinkom populacije u svakoj iteraciji
+U drugoj varijanti se simulirano kaljenje pokreće samo nad najboljom jedinkom populacije u svakoj iteraciji.
 
 \vspace{0.5cm}
 \begin{center}
@@ -185,7 +230,7 @@ U trećoj varijanti je simulirano kaljenje pokrenuto nad konačnim rešenjem gen
 \end{center}
 \vspace{0.5cm}
 
-Prva i druga varijanta su ostvarile slične rezultate, značajno bolje od treće. Vreme izvršavanja druge varijante je neuporedivo veća od vremena izvršavanja prve varijante.
+Prva i druga varijanta su ostvarile slične rezultate, značajno bolje od treće. Vreme izvršavanja druge varijante je neuporedivo manja od vremena izvršavanja prve varijante.
 
 
 \section{Poređenje rezultata}
@@ -229,7 +274,5 @@ Na svim test primerima je najmanje vreme izvršavanja imalo simulirano kaljenje.
   \hspace{1cm} 
 \end{center}
 \vspace{0.5cm}
-
-\printbibliography
 
 \end{document}
